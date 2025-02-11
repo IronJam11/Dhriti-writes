@@ -30,8 +30,8 @@ class User(AbstractBaseUser,PermissionsMixin):
     profile_picture = models.ImageField(upload_to='profile_pictures/',null=True,blank=True)
     date_joined = models.DateTimeField(default=timezone.now)
     objects = CustomUserManager()
-    is_staff = models.BooleanField(default=False)  # Required for admin access
-    is_superuser = models.BooleanField(default=False)  # Required for admin access
+    is_staff = models.BooleanField(default=False) 
+    is_superuser = models.BooleanField(default=False) 
     isVerified = models.BooleanField(default=False)
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
@@ -49,16 +49,14 @@ class Photo(models.Model):
     description = models.TextField(blank=True, max_length=500)
 
     def __str__(self):
-        return f"Photo {self.id} - {self.description[:30]}"  # Show a short description
-
+        return f"Photo {self.id} - {self.description[:30]}" 
 
 class Link(models.Model):
-    name = models.CharField(max_length=255)  # Name for the link (e.g., "Buy Book", "More Poems")
+    name = models.CharField(max_length=255) 
     url = models.URLField()
 
     def __str__(self):
         return self.name
-
 
 class PoetryPiece(models.Model):
 
@@ -71,6 +69,7 @@ class PoetryPiece(models.Model):
     date_created = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User,on_delete=models.CASCADE) 
+    mood = models.CharField(max_length=100,null=True,blank=True)
     views = models.PositiveIntegerField(default=0) 
     likes = models.PositiveIntegerField(default=0) 
     is_published = models.BooleanField(default=True) 

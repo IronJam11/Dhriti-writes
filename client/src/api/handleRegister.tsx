@@ -12,7 +12,7 @@ export async function handleRegister(data: RegisterData) {
         headers: { "Content-Type": "application/json" },
       });
       if (response.status === 200 || response.status === 201) {
-        console.log("Login Successful:", response.data);
+        console.log("Registration Successful:", response.data);
         alert("Hellew fellow poet, you have been registered successfully. You are sent an otp, please check your inbox :)");
         return response.data;
       }
