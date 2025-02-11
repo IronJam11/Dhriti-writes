@@ -30,6 +30,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     profile_picture = models.ImageField(upload_to='profile_pictures/',null=True,blank=True)
     date_joined = models.DateTimeField(default=timezone.now)
     objects = CustomUserManager()
+    otp = models.CharField(max_length=6,null=True,blank=True)
     is_staff = models.BooleanField(default=False)  # Required for admin access
     is_superuser = models.BooleanField(default=False)  # Required for admin access
     USERNAME_FIELD = 'email'

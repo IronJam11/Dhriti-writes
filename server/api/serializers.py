@@ -1,5 +1,6 @@
 from .models import User
 from rest_framework import serializers
+from .models import PoetryPiece, Photo, Link
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,3 +16,27 @@ class UserSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance       
+
+
+class PhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Photo
+        fields = ["id", "image", "description"]
+
+class LinkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Link
+        fields = ["id", "name", "url"]
+
+class PoetryPieceSerializer(serializers.ModelSerializer):
+    photos = PhotoSerializer(many=True, read_only=True)
+    links = LinkSerializer(many=True, read_only=True)
+    author = serializers.ReadOnlyField(source="author.email")  # Returns author's email
+
+    class Meta:
+        model = PoetryPiece
+        fields = [
+            "id", "title", "content", "description", "photos", "links", 
+            "type_of_piece", "date_created", "last_modified", "author", 
+            "views", "likes", "is_published"
+        ]
