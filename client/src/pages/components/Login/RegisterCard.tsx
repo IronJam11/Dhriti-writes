@@ -1,22 +1,45 @@
 import React, { useState } from 'react';
 import { Card, CardContent, TextField, Button, Typography, Box } from '@mui/material';
 import { handleRegister } from '../../../api/handleRegister';
+import { handleOTPVerification } from '../../../api/handleOtpVerification';
 
 const RegisterCard: React.FC = () => {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false); 
+  const [otpID, setOtpID] = useState('');
+  const [userId, setUserId] = useState('');
 
-  const handleSubmit = (event: React.FormEvent) => {
+
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    const response = handleRegister({
-      username,
-      email,
-      password,
-      name
-    });
-    console.log(response);
+    if (!isSubmitted) {
+      // Register the user and send OTP
+      const response = await handleRegister({
+        username,
+        email,
+        password,
+        name,
+      });
+
+      if (response && response.otp_id) {
+        setOtpID(response.otp_id); 
+        setUserId(response.user);
+        setIsSubmitted(true);  
+      }
+    } else {
+      const response = await handleOTPVerification({
+        otp,
+        otp_id: otpID,
+        "user_id": userId
+      });
+      if (response) {
+        window.location.href = '/login';
+      }
+    }
   };
 
   return (
@@ -81,15 +104,28 @@ const RegisterCard: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <Button
-              type="submit"
+            {isSubmitted && <TextField
+              margin="normal"
+              required
               fullWidth
-              color='primary'
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Register
+              name="otp"
+              label="otp"
+              type="otp"
+              id="otp"
+              autoComplete="current-password"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+            />}
+            <Button
+                type="submit"
+                fullWidth
+                color="primary"
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                {isSubmitted ? 'Submit OTP' : 'Register'}
             </Button>
+            
           </Box>
         </CardContent>
       </Card>
