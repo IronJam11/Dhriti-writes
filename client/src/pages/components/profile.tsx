@@ -4,6 +4,7 @@ import {
 } from "@mui/material";
 import { Edit as EditIcon, Save as SaveIcon, CameraAlt as CameraAltIcon } from "@mui/icons-material";
 import { BACKEND_ENDPOINT } from "../../constants/endpoints";
+import {  useTheme } from '@mui/material/styles';
 
 interface User {
     email: string;
@@ -19,7 +20,8 @@ interface ProfileProps {
     onUpdate: (updatedUser: User, photoFile?: File) => void;
 }
 
-const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
+const Profile: React.FC<ProfileProps> = ({ user, onUpdate}) => {
+    const theme = useTheme();
     const [editedUser, setEditedUser] = useState<User>(user);
     const [editingField, setEditingField] = useState<string | null>(null);
     const [photo, setPhoto] = useState<File | null>(null);
@@ -55,7 +57,11 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
     return (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
             <Card sx={{ width: 400, p: 3, textAlign: "center", boxShadow: 3 }}>
-                <Box sx={{ position: "relative", display: "inline-block" }}>
+            <Box sx={{ 
+                        position: "relative", 
+                        display: "inline-block",  
+                        color: theme.palette.mode === 'light' ? '#000000' : '#ffffff'
+                    }}>
                     <Avatar
                         src={editedUser.profile_picture|| "https://via.placeholder.com/150"}
                         alt={editedUser.name}
@@ -63,7 +69,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
                     />
                     <IconButton
                         component="label"
-                        sx={{ position: "absolute", bottom: 0, right: "30%", bgcolor: "white", p: 0.5 }}
+                        sx={{ position: "absolute", bottom: 0, right: "30%", bgcolor: "white", color: theme.palette.mode === 'dark' ? '#000000' : '#ffffff', p: 0.5 }}
                     >
                         <CameraAltIcon fontSize="small" />
                         <input 
@@ -101,7 +107,14 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
                     </Typography>
                 </CardContent>
                 {hasChanges && (
-                    <Button variant="contained" onClick={handleSave} startIcon={<SaveIcon />} sx={{ mt: 2 }}>
+                    <Button 
+                    variant="contained" 
+                    onClick={handleSave} 
+                    startIcon={<SaveIcon />} 
+                    sx={{ 
+                            mt: 2,
+                            color: theme.palette.mode === 'dark' ? '#000000' : '#ffffff',
+                        }}>
                         Save Changes
                     </Button>
                 )}

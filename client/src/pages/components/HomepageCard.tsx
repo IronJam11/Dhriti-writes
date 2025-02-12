@@ -90,10 +90,35 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 export default function DhritiWritesDashboard() {
   const theme = useTheme();
-  const [user,setUser] = React.useState<User | null>(null);
+  const [user, setUser] = React.useState<User | null>(null);
   const [open, setOpen] = React.useState(true);
   const [reportsOpen, setReportsOpen] = React.useState(false);
-  const [selectedMenu, setSelectedMenu] = React.useState<'pieces' | 'orders' | 'reports' | 'profile'>('pieces');
+  
+  // Initialize selectedMenu based on URL hash
+  const getInitialRoute = () => {
+    const hash = window.location.hash.replace('#', '') || 'pieces';
+    return hash as 'pieces' | 'orders' | 'reports' | 'profile';
+  };
+
+  const [selectedMenu, setSelectedMenu] = React.useState(getInitialRoute());
+
+  // Update URL hash when menu changes
+  const handleMenuSelect = (menu: 'pieces' | 'orders' | 'reports' | 'profile') => {
+    setSelectedMenu(menu);
+    window.location.hash = menu;
+  };
+
+  // Listen for hash changes
+  React.useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '') || 'pieces';
+      setSelectedMenu(hash as 'pieces' | 'orders' | 'reports' | 'profile');
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
   const handleDrawerOpen = () => setOpen(true);
   const handleDrawerClose = () => setOpen(false);
 
@@ -114,7 +139,7 @@ export default function DhritiWritesDashboard() {
     } catch (error) {
         console.error('Error updating user:', error);
     }
-};
+  };
 
   React.useEffect(() => {
     const fetchUser = async () => {
@@ -130,7 +155,6 @@ export default function DhritiWritesDashboard() {
     fetchUser();
   }, []);
 
-  // Function to render content based on the selected menu item
   const renderContent = () => {
     switch (selectedMenu) {
       case 'pieces':
@@ -140,7 +164,7 @@ export default function DhritiWritesDashboard() {
       case 'reports':
         return <Typography variant="h4">Reports Section</Typography>;
       case 'profile':
-        return user ? <Profile user={user} onUpdate={handleUpdateUser}/> : <Typography variant="h4">Loading...</Typography>;
+        return user ? <Profile user={user} onUpdate={handleUpdateUser} /> : <Typography variant="h4">Loading...</Typography>;
       default:
         return <Typography variant="h4">Select a section</Typography>;
     }
@@ -190,7 +214,7 @@ export default function DhritiWritesDashboard() {
         <Divider />
         <List>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => setSelectedMenu('pieces')}>
+            <ListItemButton onClick={() => handleMenuSelect('pieces')}>
               <ListItemIcon>
                 <DashboardIcon />
               </ListItemIcon>
@@ -198,7 +222,7 @@ export default function DhritiWritesDashboard() {
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => setSelectedMenu('orders')}>
+            <ListItemButton onClick={() => handleMenuSelect('orders')}>
               <ListItemIcon>
                 <ShoppingCartIcon />
               </ListItemIcon>
@@ -224,7 +248,7 @@ export default function DhritiWritesDashboard() {
           </ListItem>
           <Collapse in={reportsOpen} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItemButton sx={{ pl: 4 }} onClick={() => setSelectedMenu('reports')}>
+              <ListItemButton sx={{ pl: 4 }} onClick={() => handleMenuSelect('reports')}>
                 <ListItemIcon>
                   <DescriptionIcon />
                 </ListItemIcon>
@@ -233,7 +257,7 @@ export default function DhritiWritesDashboard() {
             </List>
           </Collapse>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => setSelectedMenu('profile')}>
+            <ListItemButton onClick={() => handleMenuSelect('profile')}>
               <ListItemIcon>
                 <LayersIcon />
               </ListItemIcon>
