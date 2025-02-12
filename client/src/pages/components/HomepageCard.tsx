@@ -28,9 +28,21 @@ import {
   ExpandMore
 } from '@mui/icons-material';
 import Grid from '@mui/material/Grid';
+import Pieces from './pieces';
+import Profile from './profile';
+import { getUserDetails } from '../../api/getUserDetails';
+import { patchUserDetails } from '../../api/patchUserDetails';
 import { ThemeToggle } from '../../components/ThemeToggle';
 
 const drawerWidth = 240;
+interface User {
+  email: string;
+  name: string;
+  username: string;
+  bio?: string;
+  profile_picture?: string;
+  date_joined: string;
+}
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
@@ -76,23 +88,63 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-const Skeleton = styled('div')<{ height: number }>(({ theme, height }) => ({
-  backgroundColor: theme.palette.action.hover,
-  borderRadius: theme.shape.borderRadius,
-  height,
-  content: '" "',
-  transition: theme.transitions.create('background-color', {
-    duration: theme.transitions.duration.standard,
-  }),
-}));
-
 export default function DhritiWritesDashboard() {
   const theme = useTheme();
+  const [user,setUser] = React.useState<User | null>(null);
   const [open, setOpen] = React.useState(true);
   const [reportsOpen, setReportsOpen] = React.useState(false);
-
+  const [selectedMenu, setSelectedMenu] = React.useState<'pieces' | 'orders' | 'reports' | 'profile'>('pieces');
   const handleDrawerOpen = () => setOpen(true);
   const handleDrawerClose = () => setOpen(false);
+
+  const handleUpdateUser = async (updatedUser: User, photoFile?: File) => {
+    try {
+        const formData = new FormData();
+        if (photoFile) {
+            formData.append('profile_picture', photoFile);
+        }
+        Object.keys(updatedUser).forEach(key => {
+            if (key !== 'profile_picture' || !photoFile) {
+                formData.append(key, (updatedUser as any)[key]);
+            }
+        });
+        const response = await patchUserDetails(formData);
+        console.log(response.data);
+        setUser(response.data);
+    } catch (error) {
+        console.error('Error updating user:', error);
+    }
+};
+
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await getUserDetails();
+        const fetchedUser = response.data;
+        setUser(fetchedUser);
+        console.log(response.data);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  // Function to render content based on the selected menu item
+  const renderContent = () => {
+    switch (selectedMenu) {
+      case 'pieces':
+        return <Pieces />;
+      case 'orders':
+        return <Typography variant="h4">Orders Section</Typography>;
+      case 'reports':
+        return <Typography variant="h4">Reports Section</Typography>;
+      case 'profile':
+        return user ? <Profile user={user} onUpdate={handleUpdateUser}/> : <Typography variant="h4">Loading...</Typography>;
+      default:
+        return <Typography variant="h4">Select a section</Typography>;
+    }
+  };
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -138,15 +190,15 @@ export default function DhritiWritesDashboard() {
         <Divider />
         <List>
           <ListItem disablePadding>
-            <ListItemButton>
+            <ListItemButton onClick={() => setSelectedMenu('pieces')}>
               <ListItemIcon>
                 <DashboardIcon />
               </ListItemIcon>
-              <ListItemText primary="Dashboard" />
+              <ListItemText primary="Pieces" />
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton>
+            <ListItemButton onClick={() => setSelectedMenu('orders')}>
               <ListItemIcon>
                 <ShoppingCartIcon />
               </ListItemIcon>
@@ -172,65 +224,27 @@ export default function DhritiWritesDashboard() {
           </ListItem>
           <Collapse in={reportsOpen} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItemButton sx={{ pl: 4 }}>
+              <ListItemButton sx={{ pl: 4 }} onClick={() => setSelectedMenu('reports')}>
                 <ListItemIcon>
                   <DescriptionIcon />
                 </ListItemIcon>
-                <ListItemText primary="Sales" />
-              </ListItemButton>
-              <ListItemButton sx={{ pl: 4 }}>
-                <ListItemIcon>
-                  <DescriptionIcon />
-                </ListItemIcon>
-                <ListItemText primary="Traffic" />
+                <ListItemText primary="Sales Reports" />
               </ListItemButton>
             </List>
           </Collapse>
           <ListItem disablePadding>
-            <ListItemButton>
+            <ListItemButton onClick={() => setSelectedMenu('profile')}>
               <ListItemIcon>
                 <LayersIcon />
               </ListItemIcon>
-              <ListItemText primary="Integrations" />
+              <ListItemText primary="Profile" />
             </ListItemButton>
           </ListItem>
         </List>
       </Drawer>
       <Main open={open}>
         <DrawerHeader />
-        <Grid container spacing={1}>
-          <Grid xs={5} />
-          <Grid xs={12}>
-            <Skeleton height={14} />
-          </Grid>
-          <Grid xs={12}>
-            <Skeleton height={14} />
-          </Grid>
-          <Grid xs={4}>
-            <Skeleton height={100} />
-          </Grid>
-          <Grid xs={8}>
-            <Skeleton height={100} />
-          </Grid>
-          <Grid xs={12}>
-            <Skeleton height={150} />
-          </Grid>
-          <Grid xs={12}>
-            <Skeleton height={14} />
-          </Grid>
-          <Grid xs={3}>
-            <Skeleton height={100} />
-          </Grid>
-          <Grid xs={3}>
-            <Skeleton height={100} />
-          </Grid>
-          <Grid xs={3}>
-            <Skeleton height={100} />
-          </Grid>
-          <Grid xs={3}>
-            <Skeleton height={100} />
-          </Grid>
-        </Grid>
+        {renderContent()}
       </Main>
     </Box>
   );

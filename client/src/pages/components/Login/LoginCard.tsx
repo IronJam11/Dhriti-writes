@@ -193,6 +193,7 @@ const LoginCard: React.FC = () => {
                     borderRadius: 2,
                     textTransform: 'none',
                     fontSize: '1.1rem',
+                    color: theme.palette.mode === 'dark' ? '#000000' : '#ffffff',
                     fontWeight: 600,
                     boxShadow: theme.palette.mode === 'dark'
                       ? '0 4px 12px rgba(255,255,255,0.1)'

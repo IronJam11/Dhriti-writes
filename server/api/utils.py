@@ -4,6 +4,7 @@ from api.models import User
 from django.http import JsonResponse
 from django.core.files.storage import default_storage
 
+BACKEND_ENDPOINT = 'http://127.0.0.1:8000'
 def get_userdetails_from_token(token):
     try:
         decoded_token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
@@ -18,7 +19,7 @@ def get_userdetails_from_token(token):
             "bio":user.bio,
             "name":user.name,
             "date_joined":user.date_joined,
-            "profile_picture": profile_picture_url
+            "profile_picture": f'{BACKEND_ENDPOINT}{profile_picture_url}',
         }
         if user:
             return user_details

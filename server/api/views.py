@@ -192,3 +192,85 @@ class PoetryPieceView(APIView):
         poetry_piece.delete()
         return Response({"message": "Poetry piece deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+import jwt
+from django.conf import settings
+from api.models import User
+from django.core.files.storage import default_storage
+from rest_framework.decorators import api_view
+from api.utils import get_userdetails_from_token
+
+
+import jwt
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .serializers import UserSerializer
+from .utils import get_userdetails_from_token  # Function to decode token and get user details
+
+User = get_user_model()
+
+class GetUserFromTokenView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        auth_header = request.headers.get('Authorization')
+        if auth_header is None or not auth_header.startswith('Bearer '):
+            return Response({"error": "Token not provided or incorrect format"}, status=status.HTTP_400_BAD_REQUEST)
+
+        token = auth_header.split(' ')[1]
+        user_details = get_userdetails_from_token(token)
+
+        if 'error' in user_details:
+            return Response(user_details, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(user_details, status=status.HTTP_200_OK)
+
+    def patch(self, request, *args, **kwargs):
+        auth_header = request.headers.get('Authorization')
+        if auth_header is None or not auth_header.startswith('Bearer '):
+            return Response({"error": "Token not provided or incorrect format"}, 
+                        status=status.HTTP_400_BAD_REQUEST)
+        
+        token = auth_header.split(' ')[1]
+        user_details = get_userdetails_from_token(token)
+        
+        if 'error' in user_details:
+            return Response(user_details, status=status.HTTP_400_BAD_REQUEST)
+        print(request.data)
+        token_email = user_details.get("email")
+        request_email = request.data.get("email")
+        
+        if token_email != request_email:
+            return Response({"error": "Unauthorized: Email mismatch"}, 
+                        status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            user = User.objects.get(email=token_email)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, 
+                        status=status.HTTP_404_NOT_FOUND)
+
+        # Create mutable copy of request data
+        mutable_data = request.data.copy()
+        
+        # Check if profile picture has changed
+        request_photo = request.data.get("profile_picture")
+        current_photo = user_details.get("profile_picture")
+        
+        if request_photo == current_photo:
+            # If the path hasn't changed, remove it from the update data
+            # This prevents Django from trying to process it as a file
+            if 'profile_picture' in mutable_data:
+                del mutable_data['profile_picture']
+        
+        serializer = UserSerializer(user, data=mutable_data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

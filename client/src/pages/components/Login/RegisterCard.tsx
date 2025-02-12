@@ -273,6 +273,7 @@ const RegisterCard: React.FC = () => {
                     py: 1.5,
                     borderRadius: 2,
                     textTransform: 'none',
+                    color: theme.palette.mode === 'dark' ? '#000000' : '#ffffff',
                     fontSize: '1.1rem',
                     fontWeight: 600,
                     boxShadow: theme.palette.mode === 'dark' 

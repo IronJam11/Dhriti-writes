@@ -34,17 +34,17 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     palette: {
       mode,
       primary: {
-        main: mode === 'light' ? '#000000' : '#ffffff', // Text color
+        main: mode === 'light' ? '#000000' : '#ffffff',
       },
       secondary: {
-        main: mode === 'light' ? '#000000' : '#ffffff', // Secondary text/icons
+        main: mode === 'light' ? '#000000' : '#ffffff', 
       },
       background: {
-        default: mode === 'light' ? '#ffffff' : '#000000', // Background
-        paper: mode === 'light' ? '#ffffff' : '#1e1e1e', // Component backgrounds
+        default: mode === 'light' ? '#ffffff' : '#000000',
+        paper: mode === 'light' ? '#ffffff' : '#1e1e1e',
       },
       text: {
-        primary: mode === 'light' ? '#000000' : '#ffffff', // Text should contrast the background
+        primary: mode === 'light' ? '#000000' : '#ffffff',
         secondary: mode === 'light' ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.6)',
         disabled: mode === 'light' ? 'rgba(0, 0, 0, 0.38)' : 'rgba(255, 255, 255, 0.38)',
       },

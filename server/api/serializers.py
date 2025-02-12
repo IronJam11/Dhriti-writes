@@ -5,7 +5,7 @@ from .models import PoetryPiece, Photo, Link
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','email','password','username','profile_picture','bio']
+        fields = ['id','email','password','username','profile_picture','bio','name']
         extra_kwargs = {
             'password' : {'write_only': True}
         }
