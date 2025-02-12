@@ -117,13 +117,11 @@ class Register(APIView):
             return None
 
     
-@method_decorator(csrf_exempt, name='dispatch')
+# @method_decorator(csrf_exempt, name='dispatch')
 class LoginView(APIView):
     def post(self, request, *args, **kwargs):
-        email = request.data.get('email')
-        password = request.data.get('password')
-
-        # Authenticate the user
+        email = request.data['data']['email']
+        password = request.data['data']['password']
         user = User.objects.filter(email=email).first()
         if user is None:
             raise AuthenticationFailed("User not found")
@@ -136,6 +134,8 @@ class LoginView(APIView):
                 'refresh-token': str(refresh),
                 'access-token': str(refresh.access_token),
                 'username': user.username,
+                'name': user.name,
+                'id': user.id
             }, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalid enrollmentNo or password'}, status=status.HTTP_401_UNAUTHORIZED)

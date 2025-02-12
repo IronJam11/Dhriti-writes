@@ -11,7 +11,8 @@ import {
   InputAdornment,
   LinearProgress,
   Fade,
-  Divider
+  Divider,
+  useTheme
 } from '@mui/material';
 import { 
   Visibility, 
@@ -23,8 +24,10 @@ import {
 } from '@mui/icons-material';
 import { handleRegister } from '../../../api/handleRegister';
 import { handleOTPVerification } from '../../../api/handleOtpVerification';
+import { ThemeToggle } from '../../../components/ThemeToggle';
 
 const RegisterCard: React.FC = () => {
+  const theme = useTheme();
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -73,24 +76,40 @@ const RegisterCard: React.FC = () => {
     <Box
       sx={{
         display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        flexDirection: 'column',
         minHeight: '100vh',
-        background: '',
+        backgroundColor: 'background.default',
+        transition: theme.transitions.create(['background-color'], {
+          duration: theme.transitions.duration.standard,
+        }),
       }}
     >
-      <Container maxWidth="sm">
+      <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+              <ThemeToggle />
+      </Box>
+      
+      <Container maxWidth="sm" sx={{ flex: 1, display: 'flex', alignItems: 'center' }}>
         <Fade in timeout={1000}>
           <Card 
             sx={{ 
+              width: '100%',
               maxWidth: 450,
               mx: 'auto',
               borderRadius: 3,
-              boxShadow: '0 8px 40px rgba(0,0,0,0.12)',
-              overflow: 'hidden',
+              boxShadow: theme.palette.mode === 'dark' 
+                ? '0 8px 40px rgba(0,0,0,0.3)' 
+                : '0 8px 40px rgba(0,0,0,0.12)',
+              backgroundColor: 'background.paper',
+              transition: theme.transitions.create(
+                ['background-color', 'box-shadow'],
+                {
+                  duration: theme.transitions.duration.standard,
+                }
+              ),
             }}
           >
             {isLoading && <LinearProgress />}
+            
             <CardContent sx={{ p: 4 }}>
               <Typography 
                 variant="h4" 
@@ -100,7 +119,10 @@ const RegisterCard: React.FC = () => {
                   textAlign: 'center',
                   fontWeight: 700,
                   mb: 3,
-                  color: 'primary.main'
+                  color: 'primary.main',
+                  transition: theme.transitions.create(['color'], {
+                    duration: theme.transitions.duration.standard,
+                  }),
                 }}
               >
                 {isSubmitted ? 'Verify OTP' : 'Register to get bombarded with tamasha references 🥰'}
@@ -110,7 +132,13 @@ const RegisterCard: React.FC = () => {
                 <Typography 
                   variant="body2" 
                   color="text.secondary" 
-                  sx={{ textAlign: 'center', mb: 4 }}
+                  sx={{ 
+                    textAlign: 'center', 
+                    mb: 4,
+                    transition: theme.transitions.create(['color'], {
+                      duration: theme.transitions.duration.standard,
+                    }),
+                  }}
                 >
                   Fill in your information to get started
                 </Typography>
@@ -247,10 +275,20 @@ const RegisterCard: React.FC = () => {
                     textTransform: 'none',
                     fontSize: '1.1rem',
                     fontWeight: 600,
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    boxShadow: theme.palette.mode === 'dark' 
+                      ? '0 4px 12px rgba(255,255,255,0.1)'
+                      : '0 4px 12px rgba(0,0,0,0.1)',
                     '&:hover': {
-                      boxShadow: '0 6px 16px rgba(0,0,0,0.15)',
+                      boxShadow: theme.palette.mode === 'dark'
+                        ? '0 6px 16px rgba(255,255,255,0.15)'
+                        : '0 6px 16px rgba(0,0,0,0.15)',
                     },
+                    transition: theme.transitions.create(
+                      ['background-color', 'box-shadow'],
+                      {
+                        duration: theme.transitions.duration.standard,
+                      }
+                    ),
                   }}
                   disabled={isLoading}
                 >
@@ -259,8 +297,23 @@ const RegisterCard: React.FC = () => {
                     : (isSubmitted ? 'Verify OTP' : 'Create Account')}
                 </Button>
 
-                <Divider sx={{ my: 3 }}>
-                  <Typography variant="body2" color="text.secondary">
+                <Divider 
+                  sx={{ 
+                    my: 3,
+                    '&::before, &::after': {
+                      borderColor: 'divider',
+                    },
+                  }}
+                >
+                  <Typography 
+                    variant="body2" 
+                    color="text.secondary"
+                    sx={{
+                      transition: theme.transitions.create(['color'], {
+                        duration: theme.transitions.duration.standard,
+                      }),
+                    }}
+                  >
                     Already have an account?
                   </Typography>
                 </Divider>
@@ -273,6 +326,14 @@ const RegisterCard: React.FC = () => {
                     textTransform: 'none',
                     borderRadius: 2,
                     py: 1.5,
+                    borderColor: 'primary.main',
+                    color: 'primary.main',
+                    transition: theme.transitions.create(
+                      ['border-color', 'color'],
+                      {
+                        duration: theme.transitions.duration.standard,
+                      }
+                    ),
                   }}
                 >
                   Sign In
