@@ -100,7 +100,7 @@ class Register(APIView):
         send_mail(
             subject="Your OTP for registration",
             message=f"Your OTP is {otp}. It will expire in 5 minutes.",
-            from_email="aaryanjain888@gmail.com",  # Use your sender email
+            from_email="writesdhriti@gmail.com",  # Use your sender email
             recipient_list=[email],
         )
 

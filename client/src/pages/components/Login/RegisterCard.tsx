@@ -25,6 +25,7 @@ import {
 import { handleRegister } from '../../../api/handleRegister';
 import { handleOTPVerification } from '../../../api/handleOtpVerification';
 import { ThemeToggle } from '../../../components/ThemeToggle';
+import { REGISTER_PAGE_GREETING } from '../../../constants/auth_pages';
 
 const RegisterCard: React.FC = () => {
   const theme = useTheme();
@@ -125,7 +126,7 @@ const RegisterCard: React.FC = () => {
                   }),
                 }}
               >
-                {isSubmitted ? 'Verify OTP' : 'Register to get bombarded with tamasha references 🥰'}
+                {isSubmitted ? 'Verify OTP' : REGISTER_PAGE_GREETING}
               </Typography>
 
               {!isSubmitted && (

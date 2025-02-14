@@ -23,6 +23,7 @@ import {
   PersonOutline,
 } from '@mui/icons-material';
 import { ThemeToggle } from '../../../components/ThemeToggle';
+import { LOGIN_PAGE_GREETING } from '../../../constants/auth_pages';
 
 const LoginCard: React.FC = () => {
   const theme = useTheme();
@@ -37,7 +38,8 @@ const LoginCard: React.FC = () => {
     try {
       const response = await handleLogin({ email: identifier, password });
       console.log(response);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulated API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      window.location.href = '/';
     } finally {
       setIsLoading(false);
     }
@@ -95,7 +97,7 @@ const LoginCard: React.FC = () => {
                   }),
                 }}
               >
-                Welcome Back fellow poet 🥸
+                {LOGIN_PAGE_GREETING}
               </Typography>
 
               <Typography

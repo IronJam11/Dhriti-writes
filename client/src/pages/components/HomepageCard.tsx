@@ -33,6 +33,7 @@ import Profile from './profile';
 import { getUserDetails } from '../../api/getUserDetails';
 import { patchUserDetails } from '../../api/patchUserDetails';
 import { ThemeToggle } from '../../components/ThemeToggle';
+import { WEBSITE_NAME } from '../../constants/navbarConstants';
 
 const drawerWidth = 240;
 interface User {
@@ -185,7 +186,7 @@ export default function DhritiWritesDashboard() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            Dhriti Writes
+            {WEBSITE_NAME}
           </Typography>
           <ThemeToggle />
         </Toolbar>
