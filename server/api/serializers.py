@@ -1,6 +1,6 @@
 from .models import User
 from rest_framework import serializers
-from .models import PoetryPiece, Photo, Link
+from .models import PoetryPiece, Photo, Link, Order 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,3 +40,11 @@ class PoetryPieceSerializer(serializers.ModelSerializer):
             "type_of_piece", "date_created", "last_modified", "author", 
             "views", "likes", "is_published"
         ]
+
+class OrderSerializer(serializers.ModelSerializer):
+    order_date = serializers.DateTimeField(format="%d %B %Y %I:%M %p")
+
+    class Meta:
+        model = Order
+        fields = '__all__'
+        depth = 2

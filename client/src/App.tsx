@@ -4,6 +4,7 @@ import RegisterCard from './pages/components/Login/RegisterCard';
 import LoginCard from './pages/components/Login/LoginCard';
 import Homepage from './pages/components/HomepageCard';
 import { ThemeProvider } from './context/ThemeContext';
+import RazorPayCard from './pages/components/RazorpayCard';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/register" element={<RegisterCard />} />
         <Route path="/login" element={<LoginCard/>} />
         <Route path="/" element={<Homepage/>} />
+        <Route path="/pay" element={<RazorPayCard/>} />
         {/* <Route path="*" element={<NotFound />} /> */}
       </Routes>
     </Router>
