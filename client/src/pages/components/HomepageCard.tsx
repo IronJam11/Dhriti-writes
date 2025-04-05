@@ -55,6 +55,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
     duration: theme.transitions.duration.leavingScreen,
   }),
   marginLeft: `-${drawerWidth}px`,
+  backgroundColor: theme.palette.background.default,
   ...(open && {
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.easeOut,
@@ -71,6 +72,8 @@ const AppBarStyled = styled(AppBar, {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
+  backgroundColor: theme.palette.background.default,
+  color: theme.palette.text.primary,
   ...(open && {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: `${drawerWidth}px`,
@@ -87,6 +90,8 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 1),
   ...theme.mixins.toolbar,
   justifyContent: 'flex-end',
+  backgroundColor: theme.palette.background.default,
+  color: theme.palette.text.primary,
 }));
 
 export default function DhritiWritesDashboard() {
@@ -95,7 +100,6 @@ export default function DhritiWritesDashboard() {
   const [open, setOpen] = React.useState(true);
   const [reportsOpen, setReportsOpen] = React.useState(false);
   
-  // Initialize selectedMenu based on URL hash
   const getInitialRoute = () => {
     const hash = window.location.hash.replace('#', '') || 'pieces';
     return hash as 'pieces' | 'orders' | 'reports' | 'profile';
@@ -103,13 +107,11 @@ export default function DhritiWritesDashboard() {
 
   const [selectedMenu, setSelectedMenu] = React.useState(getInitialRoute());
 
-  // Update URL hash when menu changes
   const handleMenuSelect = (menu: 'pieces' | 'orders' | 'reports' | 'profile') => {
     setSelectedMenu(menu);
     window.location.hash = menu;
   };
 
-  // Listen for hash changes
   React.useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '') || 'pieces';
@@ -172,7 +174,7 @@ export default function DhritiWritesDashboard() {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', bgcolor: 'background.default' }}>
       <CssBaseline />
       <AppBarStyled position="fixed" open={open}>
         <Toolbar>
@@ -198,6 +200,7 @@ export default function DhritiWritesDashboard() {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
+            bgcolor: 'background.paper',
           },
         }}
         variant="persistent"
@@ -217,7 +220,7 @@ export default function DhritiWritesDashboard() {
           <ListItem disablePadding>
             <ListItemButton onClick={() => handleMenuSelect('pieces')}>
               <ListItemIcon>
-                <DashboardIcon />
+                <DashboardIcon color="inherit" />
               </ListItemIcon>
               <ListItemText primary="Pieces" />
             </ListItemButton>
@@ -225,7 +228,7 @@ export default function DhritiWritesDashboard() {
           <ListItem disablePadding>
             <ListItemButton onClick={() => handleMenuSelect('orders')}>
               <ListItemIcon>
-                <ShoppingCartIcon />
+                <ShoppingCartIcon color="inherit" />
               </ListItemIcon>
               <ListItemText primary="Orders" />
             </ListItemButton>
@@ -241,7 +244,7 @@ export default function DhritiWritesDashboard() {
           <ListItem disablePadding>
             <ListItemButton onClick={() => setReportsOpen(!reportsOpen)}>
               <ListItemIcon>
-                <BarChartIcon />
+                <BarChartIcon color="inherit" />
               </ListItemIcon>
               <ListItemText primary="Reports" />
               {reportsOpen ? <ExpandLess /> : <ExpandMore />}
@@ -251,7 +254,7 @@ export default function DhritiWritesDashboard() {
             <List component="div" disablePadding>
               <ListItemButton sx={{ pl: 4 }} onClick={() => handleMenuSelect('reports')}>
                 <ListItemIcon>
-                  <DescriptionIcon />
+                  <DescriptionIcon color="inherit" />
                 </ListItemIcon>
                 <ListItemText primary="Sales Reports" />
               </ListItemButton>
@@ -260,7 +263,7 @@ export default function DhritiWritesDashboard() {
           <ListItem disablePadding>
             <ListItemButton onClick={() => handleMenuSelect('profile')}>
               <ListItemIcon>
-                <LayersIcon />
+                <LayersIcon color="inherit" />
               </ListItemIcon>
               <ListItemText primary="Profile" />
             </ListItemButton>

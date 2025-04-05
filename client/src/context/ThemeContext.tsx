@@ -1,68 +1,85 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { ThemeProvider as MUIThemeProvider, createTheme } from '@mui/material';
-import { PaletteMode } from '@mui/material';
+import { ThemeProvider as MUIThemeProvider, createTheme, PaletteMode } from '@mui/material';
+import { themePresets } from '../pages/components/themes/theme';// if it's in a separate file
 
 interface ThemeContextType {
   mode: PaletteMode;
   toggleColorMode: () => void;
+  themeIndex: number;
+  setThemeIndex: (index: number) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
   mode: 'light',
   toggleColorMode: () => {},
+  themeIndex: 0,
+  setThemeIndex: () => {},
 });
 
 export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [mode, setMode] = useState<PaletteMode>(() => {
-    const savedMode = localStorage.getItem('theme-mode');
-    return (savedMode as PaletteMode) || 'light';
+    return (localStorage.getItem('theme-mode') as PaletteMode) || 'light';
   });
 
-  useEffect(() => {
-    localStorage.setItem('theme-mode', mode);
-    document.documentElement.style.backgroundColor = 
-      mode === 'dark' ? '#000000' : '#ffffff';
-  }, [mode]);
+  const [themeIndex, setThemeIndexState] = useState<number>(() => {
+    return Number(localStorage.getItem('theme-index')) || 0;
+  });
+
+  const setThemeIndex = (index: number) => {
+    localStorage.setItem('theme-index', index.toString());
+    setThemeIndexState(index);
+  };
 
   const toggleColorMode = () => {
-    setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+    const newMode = mode === 'light' ? 'dark' : 'light';
+    localStorage.setItem('theme-mode', newMode);
+    setMode(newMode);
   };
+
+  const preset = themePresets[themeIndex];
+  const colors = preset[mode];
+
+  useEffect(() => {
+    document.documentElement.style.backgroundColor = colors.background;
+  }, [colors]);
 
   const theme = createTheme({
     palette: {
       mode,
-      primary: {
-        main: mode === 'light' ? '#000000' : '#ffffff',
-      },
-      secondary: {
-        main: mode === 'light' ? '#000000' : '#ffffff', 
-      },
+      primary: { main: colors.primary },
+      secondary: { main: colors.secondary },
       background: {
-        default: mode === 'light' ? '#ffffff' : '#000000',
-        paper: mode === 'light' ? '#ffffff' : '#1e1e1e',
+        default: colors.background,
+        paper: colors.paper,
       },
       text: {
-        primary: mode === 'light' ? '#000000' : '#ffffff',
-        secondary: mode === 'light' ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.6)',
-        disabled: mode === 'light' ? 'rgba(0, 0, 0, 0.38)' : 'rgba(255, 255, 255, 0.38)',
+        primary: colors.textPrimary,
+        secondary: mode === 'light'
+          ? 'rgba(0, 0, 0, 0.6)'
+          : 'rgba(255, 255, 255, 0.6)',
+        disabled: mode === 'light'
+          ? 'rgba(0, 0, 0, 0.38)'
+          : 'rgba(255, 255, 255, 0.38)',
       },
-      divider: mode === 'light' ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.12)',
+      divider: mode === 'light'
+        ? 'rgba(0, 0, 0, 0.12)'
+        : 'rgba(255, 255, 255, 0.12)',
     },
     components: {
       MuiCssBaseline: {
         styleOverrides: {
           body: {
             transition: 'all 0.3s linear',
-            color: mode === 'light' ? '#000000' : '#ffffff',
+            color: colors.textPrimary,
           },
         },
       },
       MuiPaper: {
         styleOverrides: {
           root: {
-            backgroundColor: mode === 'light' ? '#ffffff' : '#000000',
+            backgroundColor: colors.paper,
             transition: 'all 0.3s linear',
           },
         },
@@ -70,7 +87,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       MuiCard: {
         styleOverrides: {
           root: {
-            backgroundColor: mode === 'light' ? '#ffffff' : '#000000',
+            backgroundColor: colors.paper,
             transition: 'all 0.3s linear',
           },
         },
@@ -78,7 +95,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       MuiAppBar: {
         styleOverrides: {
           root: {
-            backgroundColor: mode === 'light' ? '#ffffff' : '#000000',
+            backgroundColor: colors.background,
             transition: 'all 0.3s linear',
           },
         },
@@ -86,7 +103,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       MuiButton: {
         styleOverrides: {
           root: {
-            color: mode === 'light' ? '#000000' : '#ffffff',
+            color: colors.textPrimary,
             transition: 'all 0.3s linear',
           },
         },
@@ -94,7 +111,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       MuiIconButton: {
         styleOverrides: {
           root: {
-            color: mode === 'light' ? '#000000' : '#ffffff',
+            color: colors.textPrimary,
             transition: 'all 0.3s linear',
           },
         },
@@ -102,13 +119,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     },
     typography: {
       allVariants: {
-        color: mode === 'light' ? '#000000' : '#ffffff',
+        color: colors.textPrimary,
       },
     },
   });
 
   return (
-    <ThemeContext.Provider value={{ mode, toggleColorMode }}>
+    <ThemeContext.Provider value={{ mode, toggleColorMode, themeIndex, setThemeIndex }}>
       <MUIThemeProvider theme={theme}>
         {children}
       </MUIThemeProvider>

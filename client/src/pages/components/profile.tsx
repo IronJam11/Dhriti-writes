@@ -4,7 +4,8 @@ import {
 } from "@mui/material";
 import { Edit as EditIcon, Save as SaveIcon, CameraAlt as CameraAltIcon } from "@mui/icons-material";
 import { BACKEND_ENDPOINT } from "../../constants/endpoints";
-import {  useTheme } from '@mui/material/styles';
+import { useTheme as useAppTheme } from "../../context/ThemeContext";
+import { useTheme as useMuiTheme } from '@mui/material/styles'; // <- MUI hook for palette
 
 interface User {
     email: string;
@@ -20,8 +21,10 @@ interface ProfileProps {
     onUpdate: (updatedUser: User, photoFile?: File) => void;
 }
 
-const Profile: React.FC<ProfileProps> = ({ user, onUpdate}) => {
-    const theme = useTheme();
+const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
+    const { mode } = useAppTheme();
+    const theme = useMuiTheme();
+
     const [editedUser, setEditedUser] = useState<User>(user);
     const [editingField, setEditingField] = useState<string | null>(null);
     const [photo, setPhoto] = useState<File | null>(null);
@@ -56,20 +59,30 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate}) => {
 
     return (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
-            <Card sx={{ width: 400, p: 3, textAlign: "center", boxShadow: 3 }}>
-            <Box sx={{ 
-                        position: "relative", 
-                        display: "inline-block",  
-                        color: theme.palette.mode === 'light' ? '#000000' : '#ffffff'
-                    }}>
+            <Card sx={{ 
+                width: 400, 
+                p: 3, 
+                textAlign: "center", 
+                boxShadow: 3,
+                backgroundColor: theme.palette.background.paper,
+                transition: 'all 0.3s ease'
+            }}>
+                <Box sx={{ position: "relative", display: "inline-block" }}>
                     <Avatar
-                        src={editedUser.profile_picture|| "https://via.placeholder.com/150"}
+                        src={editedUser.profile_picture || "https://via.placeholder.com/150"}
                         alt={editedUser.name}
                         sx={{ width: 100, height: 100, mx: "auto", mb: 2 }}
                     />
                     <IconButton
                         component="label"
-                        sx={{ position: "absolute", bottom: 0, right: "30%", bgcolor: "white", color: theme.palette.mode === 'dark' ? '#000000' : '#ffffff', p: 0.5 }}
+                        sx={{ 
+                            position: "absolute", 
+                            bottom: 0, 
+                            right: "30%", 
+                            bgcolor: theme.palette.background.default, 
+                            color: theme.palette.text.primary, 
+                            p: 0.5 
+                        }}
                     >
                         <CameraAltIcon fontSize="small" />
                         <input 
@@ -80,9 +93,13 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate}) => {
                         />
                     </IconButton>
                 </Box>
+
                 <CardContent>
                     {(["name", "username", "bio"] as const).map((field) => (
-                        <Box key={field} sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1 }}>
+                        <Box 
+                            key={field} 
+                            sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1 }}
+                        >
                             {editingField === field ? (
                                 <TextField
                                     fullWidth
@@ -93,11 +110,14 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate}) => {
                                     autoFocus
                                 />
                             ) : (
-                                <Typography variant={field === "bio" ? "body2" : "h6"}>
-                                    {editedUser[field] || "No " + field + " available"}
+                                <Typography 
+                                    variant={field === "bio" ? "body2" : "h6"} 
+                                    color={theme.palette.text.primary}
+                                >
+                                    {editedUser[field] || `No ${field} available`}
                                 </Typography>
                             )}
-                            <IconButton onClick={() => handleEdit(field)}>
+                            <IconButton onClick={() => handleEdit(field)} sx={{ color: theme.palette.text.primary }}>
                                 <EditIcon fontSize="small" />
                             </IconButton>
                         </Box>
@@ -106,15 +126,21 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate}) => {
                         Joined on {new Date(editedUser.date_joined).toDateString()}
                     </Typography>
                 </CardContent>
+
                 {hasChanges && (
                     <Button 
-                    variant="contained" 
-                    onClick={handleSave} 
-                    startIcon={<SaveIcon />} 
-                    sx={{ 
+                        variant="contained" 
+                        onClick={handleSave} 
+                        startIcon={<SaveIcon />} 
+                        sx={{ 
                             mt: 2,
-                            color: theme.palette.mode === 'dark' ? '#000000' : '#ffffff',
-                        }}>
+                            color: theme.palette.primary.contrastText,
+                            backgroundColor: theme.palette.primary.main,
+                            '&:hover': {
+                                backgroundColor: theme.palette.primary.dark
+                            }
+                        }}
+                    >
                         Save Changes
                     </Button>
                 )}
