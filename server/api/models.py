@@ -95,3 +95,17 @@ class Order(models.Model):
 
     def __str__(self):
         return self.order_product
+    
+
+class Theme(models.Model):
+    theme_name = models.CharField(max_length=100)
+    theme_description = models.TextField()
+    primary_color = models.CharField(max_length=7)  # Hex color code
+    secondary_color = models.CharField(max_length=7)  # Hex color code
+    background_color = models.CharField(max_length=7)  # Hex color code
+    paper_color = models.CharField(max_length=7)  # Hex color code
+    textPrimary_color = models.CharField(max_length=7)  # Hex color code
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.theme_name

@@ -14,8 +14,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.shortcuts import get_object_or_404
-from .models import PoetryPiece
-from .serializers import PoetryPieceSerializer
+from .models import PoetryPiece, Theme
+from .serializers import PoetryPieceSerializer, ThemeSerializer
 
 
 import random
@@ -390,3 +390,40 @@ def handle_payment_success(request):
     }
 
     return Response(res_data)
+
+
+class ThemeView(APIView):
+    def get(self, request, pk=None):
+        if pk:
+            theme = get_object_or_404(Theme, pk=pk)
+            serializer = ThemeSerializer(theme)
+            return Response(serializer.data)
+        poetry_pieces = Theme.objects.all()
+        serializer = ThemeSerializer(poetry_pieces, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ThemeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(author=request.user)  # Set author to the logged-in user
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, pk):
+        theme = get_object_or_404(Theme, pk=pk)
+        if request.user != theme.owner:
+            return Response({"error": "You are not the owner of this theme."}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = ThemeSerializer(theme, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        theme = get_object_or_404(Theme, pk=pk)
+        if request.user != theme.owner:
+            return Response({"error": "You are not the owner of this theme."}, status=status.HTTP_403_FORBIDDEN)
+
+        theme.delete()
+        return Response({"message": "Theme deleted successfully"}, status=status.HTTP_204_NO_CONTENT)

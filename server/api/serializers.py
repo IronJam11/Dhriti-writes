@@ -1,6 +1,6 @@
 from .models import User
 from rest_framework import serializers
-from .models import PoetryPiece, Photo, Link, Order 
+from .models import PoetryPiece, Photo, Link, Order, Theme
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -48,3 +48,9 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = '__all__'
         depth = 2
+
+
+class ThemeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Theme
+        fields = '__all__'
